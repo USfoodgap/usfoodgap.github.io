@@ -979,7 +979,7 @@ window.addEventListener("DOMContentLoaded",function(){
       };
     }
   }
-  var CSV_COLS=["code","name","state","state_abbr","tier","severity_rate","people_affected","population","stores","num_deserts","median_income","poverty_rate","snap_rate","grocery_weekly","grocery_scope","produce_pct","setting","low_access_pop_share","no_vehicle_share","life_expectancy"];
+  var CSV_COLS=["record_type","code","name","state","state_abbr","tier","severity_rate","people_affected","population","stores","num_deserts","median_income","poverty_rate","snap_rate","grocery_weekly","grocery_scope","produce_pct","setting","low_access_pop_share","no_vehicle_share","life_expectancy"];
   var CSV_HEADER=CSV_COLS.join(",");
   function csvEscape(v){
     if(v===null||v===undefined) return "";
@@ -989,10 +989,18 @@ window.addEventListener("DOMContentLoaded",function(){
   }
   function countyCsvRow(p){
     return [
-      p.code, p.name, p.province, p.state, p.tier, p.rate, p.people_affected, p.population,
+      "county", p.code, p.name, p.province, p.state, p.tier, p.rate, p.people_affected, p.population,
       p.stores, p.num_deserts, p.median_income, p.poverty_rate, p.snap_rate,
       p.grocery_weekly, p.grocery_scope, p.produce_pct, p.setting,
       p.low_access_pop_share, p.no_vehicle_share, p.life_expectancy
+    ].map(csvEscape).join(",");
+  }
+  function stateCsvRow(S){
+    return [
+      "state", S.state||"STATE", S.name, S.name, S.state||"", S.tier, S.rate, S.people_affected, S.population,
+      S.stores, S.num_deserts, S.median_income, "", "",
+      S.grocery_weekly, "", S.produce_pct, "state aggregate",
+      "", "", ""
     ].map(csvEscape).join(",");
   }
   function slugFile(s){ return String(s||"").replace(/[^A-Za-z0-9]+/g,"-").replace(/^-+|-+$/g,""); }
@@ -1006,6 +1014,15 @@ window.addEventListener("DOMContentLoaded",function(){
   }
   function downloadCountiesCsv(features, filename){
     var rows=features.map(function(f){ return countyCsvRow(f.properties||f); });
+    downloadCsvBlob(filename, CSV_HEADER+"\n"+rows.join("\n")+"\n");
+  }
+  function downloadStateCsv(S, filename){
+    var feats=US.features.filter(function(f){ return f.properties.province===S.name; });
+    feats.sort(function(a,b){
+      var na=(a.properties&&a.properties.name)||"", nb=(b.properties&&b.properties.name)||"";
+      return na.localeCompare(nb, undefined, {sensitivity:"base"});
+    });
+    var rows=[stateCsvRow(S)].concat(feats.map(function(f){ return countyCsvRow(f.properties||f); }));
     downloadCsvBlob(filename, CSV_HEADER+"\n"+rows.join("\n")+"\n");
   }
   function honestyPlain(){
@@ -1118,8 +1135,7 @@ window.addEventListener("DOMContentLoaded",function(){
     var cd=document.getElementById("copydata"); if(cd) cd.onclick=function(){copyPlain(cd, buildStateCopyText(S));};
     var cl=document.getElementById("copylink"); if(cl) cl.onclick=function(){copyPlain(cl, location.origin+langUrl(null,S.name));};
     var dl=document.getElementById("download-csv"); if(dl) dl.onclick=function(){
-      var feats=US.features.filter(function(f){ return f.properties.province===S.name; });
-      downloadCountiesCsv(feats, "foodgap-"+slugFile(S.name)+".csv");
+      downloadStateCsv(S, "foodgap-"+slugFile(S.name)+".csv");
     };
     panel.classList.add("open"); document.body.classList.add("panel-open");
     closeFiltersQuietly();
