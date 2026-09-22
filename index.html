@@ -165,11 +165,21 @@
   .worst-s{color:var(--muted);font-weight:700;font-variant-numeric:tabular-nums}
   .p-foot{padding:16px 22px 30px;font-size:11px;color:var(--faint);line-height:1.5;border-top:1px solid var(--line);margin-top:8px}
   .p-foot b{color:var(--muted)}
-  .p-crumb{font-size:12px;color:var(--muted);margin:10px 0 0;line-height:1.45}
+  .p-nav{padding:14px 22px 0;display:flex;flex-direction:column;gap:8px}
+  .p-back{align-self:flex-start;display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:6px 12px;border-radius:8px;border:1px solid var(--line);background:rgba(255,255,255,.06);color:var(--text);font:inherit;font-size:13px;font-weight:650;cursor:pointer}
+  .p-back:hover{background:rgba(255,255,255,.12)}
+  .p-crumb{font-size:12px;color:var(--muted);margin:0;line-height:1.45}
   .p-crumb button{background:none;border:0;color:var(--accent);font:inherit;font-weight:650;cursor:pointer;padding:0;min-height:0}
   .p-crumb button:hover{text-decoration:underline}
   .p-crumb .sep{margin:0 6px;color:var(--faint)}
   .p-crumb .here{color:var(--text);font-weight:650}
+  .th-help{margin:0 0 8px;font-size:11px;line-height:1.45;color:var(--muted)}
+  .cmp-mode{display:flex;gap:6px;margin:8px 0 4px}
+  .cmp-mode button{flex:1;min-height:36px;border-radius:8px;border:1px solid var(--line);background:rgba(255,255,255,.04);color:var(--muted);font:inherit;font-size:13px;font-weight:650;cursor:pointer}
+  .cmp-mode button.active{background:rgba(240,86,46,.18);border-color:rgba(240,86,46,.55);color:var(--text)}
+  .cmp-pickers{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0}
+  @media (min-width:720px){.cmp-pickers.cmp-4{grid-template-columns:1fr 1fr 1fr 1fr}}
+  .modal .version .version-credit{color:var(--faint);font-weight:400}
   .county-list{padding:4px 12px 14px;max-height:min(42vh,400px);overflow-y:auto}
   .county-list button{display:flex;align-items:center;gap:10px;width:100%;min-height:42px;padding:8px 10px;border:0;border-bottom:1px solid var(--line);background:transparent;color:var(--text);font:inherit;text-align:left;cursor:pointer}
   .county-list button:last-child{border-bottom:0}
@@ -210,7 +220,6 @@
   td.num{text-align:right;font-variant-numeric:tabular-nums}
   .region-row{width:100%;min-height:40px;border:0;background:transparent;color:var(--text);font:inherit;text-align:left;padding:0;cursor:pointer;display:flex;flex-direction:column;justify-content:center}
   .region-row:hover{text-decoration:underline}
-  .cmp-pickers{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0}
   .cmp-side{position:relative}
   .cmp-side input{width:100%;padding:10px 12px;border-radius:9px;border:1px solid var(--line);background:rgba(255,255,255,.04);color:var(--text);font-size:14px}
   .cmp-list{position:absolute;left:0;right:0;top:calc(100% + 4px);z-index:30;background:var(--panel);border:1px solid var(--line);border-radius:9px;max-height:200px;overflow-y:auto;display:none;box-shadow:var(--shadow)}
@@ -227,7 +236,7 @@
       background:#fff!important;color:#111!important;border:0!important;box-shadow:none!important;padding:0!important}
     .panel:not(.open) #panel-body::before{content:"Open a region panel before printing.";display:block;color:#444;font-weight:700}
     .panel .close,.panel-actions,.copylink{display:none!important}
-    .p-hero,.narrative,.section-t,.grid,.cmp,.cmp-note,.p-foot{padding-left:0!important;padding-right:0!important}
+    .p-nav,.p-hero,.narrative,.section-t,.grid,.cmp,.cmp-note,.p-foot{padding-left:0!important;padding-right:0!important}
     .p-hero{padding-top:0!important;border-bottom:1px solid #bbb!important}
     .p-hero h2{font-size:22pt!important;color:#111!important;margin-top:10px!important}
     .loc,.lbl,.r-sub,.cmp-note,.p-foot,.stat .k{color:#444!important}
@@ -330,7 +339,7 @@
     </div>
   </div>
 </noscript>
-<a class="skip-link" href="#data-table-modal" id="skip-data">Skip to county comparison</a>
+<a class="skip-link" href="#data-table-modal" id="skip-data">Skip to comparison</a>
 <div id="map" role="img" aria-label="Interactive choropleth map of U.S. counties with food deserts by severity index"></div>
 <div class="map-vignette" aria-hidden="true"></div>
 <div id="status" class="sr-only" aria-live="polite"></div>
@@ -348,7 +357,7 @@
   </div>
   <button class="btn-ghost" id="method-btn">Methodology</button>
   <button class="btn-ghost" id="about-btn">About &amp; Data</button>
-  <button class="btn-ghost" id="table-btn">Data table</button>
+  <button class="btn-ghost" id="table-btn">Compare states or counties</button>
   <button class="btn-ghost" id="us-csv-btn">Download US CSV</button>
 </header>
 <div class="search">
@@ -357,7 +366,7 @@
 </div>
 <div class="mobile-tools" aria-label="Map tools">
   <button class="btn-ghost" id="mobile-filter-btn" aria-expanded="false" aria-controls="filters">Filters</button>
-  <button class="btn-ghost" id="mobile-table-btn">Data table</button>
+  <button class="btn-ghost" id="mobile-table-btn">Compare states or counties</button>
   <button class="btn-ghost" id="mobile-method-btn">Methodology</button>
   <button class="btn-ghost" id="mobile-about-btn">About &amp; Data</button>
   <button class="btn-ghost" id="mobile-us-csv-btn">Download US CSV</button>
@@ -377,6 +386,7 @@
     <button data-setting="rural">Rural</button>
   </div>
   <h4 class="mt" id="threshold-title">Threshold</h4>
+  <p class="th-help" id="threshold-help">When enabled, the map only shows counties whose custom severity index is at least the slider value (0–100). Severity is this Atlas-based index, not a USDA LILA %.</p>
   <label class="th-row"><input type="checkbox" id="th-rate-on" /><span><span id="threshold-label">Severity ≥</span> <b id="th-rate-val">50</b></span></label>
   <input type="range" id="th-rate" min="0" max="100" step="5" value="50" disabled />
 </div>
@@ -421,7 +431,7 @@
       Built from U.S. federal public-domain sources; not an official USDA, CDC, Census, or BLS product.
       Privacy: static site, no accounts, no forms, no cookies, no analytics. See <a href="PRIVACY.md" target="_blank" rel="noopener">Privacy note</a>.
     </div>
-    <div class="version">Version <span id="app-version">—</span></div>
+    <div class="version">Version <span id="app-version">—</span><span class="version-credit"> · Chris Householder</span></div>
   </div>
 </div>
 <div class="modal-bg" id="method">
@@ -452,13 +462,19 @@
 <div class="modal-bg" id="data-table-modal">
   <div class="modal table-modal" role="dialog" aria-modal="true" aria-labelledby="data-table-title">
     <div class="tag" id="data-table-tag">COMPARE</div>
-    <h1 id="data-table-title">Compare two counties</h1>
-    <div class="cmp-pickers">
-      <div class="cmp-side"><input id="cmp-a" type="text" autocomplete="off" placeholder="First county…" aria-label="Choose first county" /><div class="cmp-list" id="cmp-a-list"></div></div>
-      <div class="cmp-side"><input id="cmp-b" type="text" autocomplete="off" placeholder="Second county…" aria-label="Choose second county" /><div class="cmp-list" id="cmp-b-list"></div></div>
+    <h1 id="data-table-title">Compare states or counties</h1>
+    <div class="cmp-mode" id="cmp-mode" role="group" aria-label="Compare mode">
+      <button type="button" class="active" data-cmp-mode="counties" id="cmp-mode-counties">Counties</button>
+      <button type="button" data-cmp-mode="states" id="cmp-mode-states">States</button>
     </div>
-    <div class="table-wrap"><table><thead><tr><th scope="col">Metric</th><th scope="col" id="cmp-h-a">County 1</th><th scope="col" id="cmp-h-b">County 2</th></tr></thead>
-      <tbody id="data-table-body"><tr><td colspan="3">Pick two counties above to compare them side by side.</td></tr></tbody></table></div>
+    <div class="cmp-pickers cmp-4" id="cmp-pickers">
+      <div class="cmp-side"><input id="cmp-a" type="text" autocomplete="off" placeholder="County A…" aria-label="Choose county A" /><div class="cmp-list" id="cmp-a-list"></div></div>
+      <div class="cmp-side"><input id="cmp-b" type="text" autocomplete="off" placeholder="County B…" aria-label="Choose county B" /><div class="cmp-list" id="cmp-b-list"></div></div>
+      <div class="cmp-side"><input id="cmp-c" type="text" autocomplete="off" placeholder="County C…" aria-label="Choose county C" /><div class="cmp-list" id="cmp-c-list"></div></div>
+      <div class="cmp-side"><input id="cmp-d" type="text" autocomplete="off" placeholder="County D…" aria-label="Choose county D" /><div class="cmp-list" id="cmp-d-list"></div></div>
+    </div>
+    <div class="table-wrap"><table><thead><tr id="cmp-thead-row"><th scope="col">Metric</th><th scope="col" id="cmp-h-a">A</th><th scope="col" id="cmp-h-b">B</th></tr></thead>
+      <tbody id="data-table-body"><tr><td colspan="3">Select up to 4 counties or states above to compare them side by side.</td></tr></tbody></table></div>
     <button class="cta" id="data-table-close">Close</button>
   </div>
 </div>
@@ -478,7 +494,7 @@ window.addEventListener("DOMContentLoaded",function(){
     window.scrollTo(0,0);
     window.addEventListener("load",function(){window.scrollTo(0,0);});
   }catch(e){}
-  var APP_VERSION="1.0.0";
+  var APP_VERSION="2.4";
   var US=window.US_DATA, USNAT=window.US_NATIONAL, USPEND=window.US_SPEND||{weekly:119,produce_pct:12.0}, USMED=window.US_MEDINC||78900, USX=window.USA_EXTRA||{}, USLET=window.US_LETTUCE||3.28;
   var esc=function(s){return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");};
   var deacc=function(s){try{return s.normalize("NFD").replace(/[̀-ͯ]/g,"");}catch(e){return s;}};
@@ -492,9 +508,9 @@ window.addEventListener("DOMContentLoaded",function(){
       tagline:"Mapping food-desert severity across the United States",
       censusDivisions:"counties with deserts", peopleLow:"people with low food access", method:"Methodology", about:"About & Data",
       search:"Search any county or state…",
-      table:"Compare counties", mobileFilters:"Filters", mobileTools:"Map tools", skipData:"Skip to county comparison",
+      table:"Compare states or counties", mobileFilters:"Filters", mobileTools:"Map tools", skipData:"Skip to comparison",
       mapLabel:"Interactive choropleth map of U.S. counties with food deserts by severity index",
-      statusTableOpen:"Data table opened", statusFiltersOpen:"Filters opened", statusFiltersClosed:"Filters closed", statusRegionOpen:"Region opened",
+      statusTableOpen:"Comparison opened", statusFiltersOpen:"Filters opened", statusFiltersClosed:"Filters closed", statusRegionOpen:"Region opened",
       searchNoResults:"No matching community or region", filterNoResults:"0 regions match", resetFilters:"Reset filters", dismiss:"Dismiss", storyPrefix:"Demo stop",
       basemapNotice:"Basemap unavailable. Data layer still works.",
       filterTitle:"Food-desert severity", threshold:"Severity ≥", legendTitle:"Food-desert severity (USDA 2019)",
@@ -504,7 +520,7 @@ window.addEventListener("DOMContentLoaded",function(){
       settings:{all:"All",urban:"Urban",rural:"Rural"},
       badge:{urban:"urban",rural:"rural"},
       tierChip:"food-desert severity", ranked:"Ranked against all 2,083 U.S. counties containing food deserts",
-      lowIncomeLabel:"severity index (0–100, custom)", censusDivision:"county", copyLink:"Copy link", copyData:"Copy data", copied:"Copied", downloadUsCsv:"Download US CSV", downloadStateCsv:"Download state CSV", downloadCountyCsv:"Download county CSV",
+      lowIncomeLabel:"severity index (0–100, custom)", censusDivision:"county", copyLink:"Copy link", copyData:"Copy data", copied:"Copied", downloadUsCsv:"Download US CSV", downloadStateCsv:"Download CSV", downloadCountyCsv:"Download CSV",
       above:"above", below:"below", intro:"In", aboutRate:"about", residents:"severity index versus the national packaged reference", nationalRate:"the national rate of",
       predictor:"Low access plus low income is the Atlas framing of food-desert risk.",
       spendBoth:"Modelled weekly grocery spend is about <b>{money}</b> ({scope}), with about <b>{produce}</b> of grocery spending on fruits & vegetables ({pscope} — national constant).",
@@ -519,7 +535,7 @@ window.addEventListener("DOMContentLoaded",function(){
       compared:"Compared to the United States", whiteLine:"White line marks the U.S. national figure",
       cmpRate:"Severity index", cmpIncome:"Median household income", cmpSpend:"Weekly grocery spend", cmpProduce:"Share on fruits & vegetables", cmpLettuce:"Head of lettuce",
       panelFoot:"<b>Custom severity index.</b> Derived from USDA Food Access Research Atlas 2019 tract indicators for counties that contain food deserts — not a published USDA county LILA %. Grocery weekly figures are <b>modelled</b> from BLS CE national food-at-home spending; produce share is a national constant. Stores: USDA Food Environment Atlas. Population: Census estimates. Life expectancy: CDC USALEEP where available. All figures in US$.",
-      tableTag:"DATA TABLE", tableTitle:"Census division data", tableSearch:"Filter regions…",
+      tableTag:"COMPARE", tableTitle:"Compare states or counties", tableSearch:"Filter regions…",
       tableSearchAria:"Filter data table by county or state", tableRegion:"Region", tableProvince:"State",
       tableRate:"Severity", tablePeople:"People", tableSetting:"Setting", tableClose:"Close table",
       tableOpenRegion:"Open region", tableNoResults:"No matching regions", close:"Close",
@@ -562,7 +578,7 @@ window.addEventListener("DOMContentLoaded",function(){
       '<div class="kstat"><div><div class="n" id="m-areas">—</div><div class="l">counties with deserts</div></div><div><div class="n" id="m-people">—</div><div class="l">people with low food access</div></div><div><div class="n" id="m-provs">—</div><div class="l">states + DC</div></div></div>'+
       '<button class="cta" id="enter-btn">Enter the national map</button>'+
       '<div class="src">Data: <a href="https://www.ers.usda.gov/data-products/food-access-research-atlas/" target="_blank" rel="noopener">USDA ERS Food Access Research Atlas (2019)</a>, CDC USALEEP, U.S. Census, USDA Food Environment Atlas, and <a href="https://www.bls.gov/cex/" target="_blank" rel="noopener">BLS Consumer Expenditure Survey</a> (national food-at-home baseline used to model weekly grocery estimates). Basemap © OpenFreeMap · OpenStreetMap contributors. Built from U.S. federal public-domain sources; not an official USDA, CDC, Census, or BLS product. Privacy: static site, no accounts, no forms, no cookies, no analytics. See <a href="PRIVACY.md" target="_blank" rel="noopener">Privacy note</a>.</div>'+
-      '<div class="version">Version <span id="app-version">—</span></div>';
+      '<div class="version">Version <span id="app-version">—</span><span class="version-credit"> · Chris Householder</span></div>';
   }
 
   function methodHtml(){
@@ -631,52 +647,165 @@ window.addEventListener("DOMContentLoaded",function(){
 
   function setStatus(msg){setTxt("status",msg);}
 
-  var cmpSel={a:null,b:null};
+  var CMP_SIDES=["a","b","c","d"];
+  var cmpMode="counties";
+  var cmpSel={a:null,b:null,c:null,d:null};
   function cmpByCode(c){for(var i=0;i<US.features.length;i++){if(US.features[i].properties.code===c)return US.features[i].properties;}return null;}
+  function cmpPlaceholders(){
+    return cmpMode==="states"
+      ? {a:"State A…",b:"State B…",c:"State C…",d:"State D…", empty:"Select up to 4 states above to compare them side by side.", entity:"State"}
+      : {a:"County A…",b:"County B…",c:"County C…",d:"County D…", empty:"Select up to 4 counties above to compare them side by side.", entity:"County"};
+  }
+  function syncCmpPlaceholders(){
+    var ph=cmpPlaceholders();
+    CMP_SIDES.forEach(function(side){
+      var input=document.getElementById("cmp-"+side); if(!input) return;
+      input.placeholder=ph[side];
+      input.setAttribute("aria-label","Choose "+ph.entity.toLowerCase()+" "+side.toUpperCase());
+    });
+  }
   function wireCmp(side){
     var input=document.getElementById("cmp-"+side), list=document.getElementById("cmp-"+side+"-list");
     if(!input||input._wired) return; input._wired=true;
     input.oninput=function(){
       var q=deacc(input.value.trim().toLowerCase()); cmpSel[side]=null;
-      if(q.length<2){list.classList.remove("open");list.innerHTML="";renderCompare();return;}
-      var hits=[];
-      for(var i=0;i<US.features.length&&hits.length<8;i++){var p=US.features[i].properties;
-        if(deacc((p.name+" "+p.province).toLowerCase()).indexOf(q)>-1) hits.push(p);}
-      list.innerHTML=hits.length?hits.map(function(p){return '<button type="button" data-code="'+esc(p.code)+'">'+esc(p.name)+' <span style="color:var(--muted)">· '+esc(p.province)+'</span></button>';}).join(""):'<button type="button" disabled>No matching county</button>';
+      if(q.length<1){list.classList.remove("open");list.innerHTML="";renderCompare();return;}
+      var hits=[], i;
+      if(cmpMode==="states"){
+        var keys=Object.keys(STATE_INDEX).sort();
+        for(i=0;i<keys.length&&hits.length<10;i++){
+          var sn=keys[i];
+          if(deacc(sn.toLowerCase()).indexOf(q)>-1) hits.push({kind:"state",key:sn,label:sn});
+        }
+        list.innerHTML=hits.length?hits.map(function(h){return '<button type="button" data-key="'+esc(h.key)+'">'+esc(h.label)+'</button>';}).join(""):'<button type="button" disabled>No matching state</button>';
+      } else {
+        for(i=0;i<US.features.length&&hits.length<8;i++){var p=US.features[i].properties;
+          if(deacc((p.name+" "+p.province).toLowerCase()).indexOf(q)>-1) hits.push(p);}
+        list.innerHTML=hits.length?hits.map(function(p){return '<button type="button" data-code="'+esc(p.code)+'">'+esc(p.name)+' <span style="color:var(--muted)">· '+esc(p.province)+'</span></button>';}).join(""):'<button type="button" disabled>No matching county</button>';
+      }
       list.classList.add("open");
       list.querySelectorAll("button[data-code]").forEach(function(b){b.onclick=function(){
         cmpSel[side]=b.dataset.code; input.value=b.textContent.replace(/\s+/g," ").trim(); list.classList.remove("open"); renderCompare();};});
+      list.querySelectorAll("button[data-key]").forEach(function(b){b.onclick=function(){
+        cmpSel[side]=b.dataset.key; input.value=b.dataset.key; list.classList.remove("open"); renderCompare();};});
     };
+  }
+  function setCmpMode(mode){
+    if(mode!=="states"&&mode!=="counties") return;
+    if(cmpMode===mode) return;
+    cmpMode=mode;
+    cmpSel={a:null,b:null,c:null,d:null};
+    CMP_SIDES.forEach(function(side){
+      var input=document.getElementById("cmp-"+side), list=document.getElementById("cmp-"+side+"-list");
+      if(input) input.value="";
+      if(list){ list.classList.remove("open"); list.innerHTML=""; }
+    });
+    document.querySelectorAll("#cmp-mode button").forEach(function(b){
+      b.classList.toggle("active", b.getAttribute("data-cmp-mode")===cmpMode);
+    });
+    syncCmpPlaceholders();
+    renderCompare();
+  }
+  function wireCmpMode(){
+    var wrap=document.getElementById("cmp-mode"); if(!wrap||wrap._wired) return; wrap._wired=true;
+    wrap.querySelectorAll("button[data-cmp-mode]").forEach(function(b){
+      b.onclick=function(){ setCmpMode(b.getAttribute("data-cmp-mode")); };
+    });
   }
   function renderCompare(){
     var tbody=document.getElementById("data-table-body"); if(!tbody) return;
-    var A=cmpSel.a&&cmpByCode(cmpSel.a), B=cmpSel.b&&cmpByCode(cmpSel.b);
-    setTxt("cmp-h-a",A?A.name:"County 1"); setTxt("cmp-h-b",B?B.name:"County 2");
-    if(!A||!B){ tbody.innerHTML='<tr><td colspan="3">Pick two counties above to compare them side by side.</td></tr>'; return; }
+    var theadRow=document.getElementById("cmp-thead-row");
+    var ph=cmpPlaceholders();
+    var ents=[], labels=[];
+    CMP_SIDES.forEach(function(side){
+      var key=cmpSel[side]; if(!key) return;
+      if(cmpMode==="states"){
+        var S=STATE_INDEX[key]; if(!S) return;
+        ents.push(S); labels.push(S.name);
+      } else {
+        var C=cmpByCode(key); if(!C) return;
+        ents.push(C); labels.push(C.name+(C.province?" · "+C.province:""));
+      }
+    });
+    // Always show 2–4 header slots: filled names, then empty letter placeholders for remaining visible columns (min 2)
+    var colCount=Math.max(2, Math.min(4, ents.length||2));
+    if(ents.length>2) colCount=ents.length;
+    if(theadRow){
+      var heads='<th scope="col">Metric</th>';
+      for(var hi=0; hi<colCount; hi++){
+        var letter=CMP_SIDES[hi].toUpperCase();
+        var title=labels[hi]||(ph.entity+" "+letter);
+        heads+='<th scope="col" id="cmp-h-'+CMP_SIDES[hi]+'">'+esc(title)+'</th>';
+      }
+      theadRow.innerHTML=heads;
+    }
+    if(ents.length<2){
+      tbody.innerHTML='<tr><td colspan="'+(colCount+1)+'">'+esc(ph.empty)+'</td></tr>';
+      return;
+    }
     function cell(v,win){var col=win===null?"var(--text)":(win?"var(--good)":"var(--moderate)");
       return '<td class="num" style="font-weight:700;color:'+col+'">'+v+'</td>';}
-    function row(label,va,vb,ra,rb,better){
-      var wa=null,wb=null;
-      if(better&&ra!=null&&rb!=null&&ra!==rb){var aw=better==="low"?ra<rb:ra>rb;wa=aw;wb=!aw;}
-      return '<tr><td>'+label+'</td>'+cell(va,wa)+cell(vb,wb)+'</tr>';
+    function row(label, vals, raws, better){
+      var wins=vals.map(function(){return null;});
+      if(better){
+        var valid=[], i;
+        for(i=0;i<raws.length;i++){ if(raws[i]!=null&&!isNaN(raws[i])) valid.push({i:i,v:raws[i]}); }
+        if(valid.length>=2){
+          var best=valid[0].v;
+          for(i=1;i<valid.length;i++){
+            if(better==="low"?valid[i].v<best:valid[i].v>best) best=valid[i].v;
+          }
+          // mark winners; if ties, all tying get win; others lose only if strictly worse
+          var anyDiff=false;
+          for(i=0;i<valid.length;i++){ if(valid[i].v!==best) anyDiff=true; }
+          if(anyDiff){
+            for(i=0;i<valid.length;i++){
+              wins[valid[i].i]=(valid[i].v===best);
+            }
+          }
+        }
+      }
+      var cells="";
+      for(var j=0;j<vals.length;j++) cells+=cell(vals[j],wins[j]);
+      return '<tr><td>'+label+'</td>'+cells+'</tr>';
     }
-    var tl=function(p){var t=tierInfo(p.tier);return t?t.label:p.tier;};
-    tbody.innerHTML=
-      row("Severity index (0–100)",A.rate+" / 100",B.rate+" / 100",A.rate,B.rate,"low")+
-      row("Severity level",esc(tl(A)),esc(tl(B)),null,null,null)+
-      row("Food-desert tracts",fmt(A.num_deserts),fmt(B.num_deserts),A.num_deserts,B.num_deserts,"low")+
-      row("People with low food access",fmt(A.people_affected),fmt(B.people_affected),A.people_affected,B.people_affected,"low")+
-      row("County population",(!num(A.population)?fmt(A.population)+" ("+(A.pop_year||"")+" est.)":"n/a"),(!num(B.population)?fmt(B.population)+" ("+(B.pop_year||"")+" est.)":"n/a"),null,null,null)+
-      row("Grocery stores",(!num(A.stores)?fmt(A.stores)+" ("+(A.stores_year||"")+")":"n/a"),(!num(B.stores)?fmt(B.stores)+" ("+(B.stores_year||"")+")":"n/a"),A.stores,B.stores,"high")+
-      row("Poverty rate",pct(A.poverty_rate),pct(B.poverty_rate),A.poverty_rate,B.poverty_rate,"low")+
-      row("Median family income",(!num(A.median_income)?money(A.median_income):"n/a"),(!num(B.median_income)?money(B.median_income):"n/a"),A.median_income,B.median_income,"high")+
-      row("Households without a vehicle",pct(A.no_vehicle_share),pct(B.no_vehicle_share),A.no_vehicle_share,B.no_vehicle_share,"low")+
-      row("Life expectancy (yrs)",(!num(A.life_expectancy)?A.life_expectancy:"n/a"),(!num(B.life_expectancy)?B.life_expectancy:"n/a"),A.life_expectancy,B.life_expectancy,"high")+
-      row("Households receiving SNAP",pct(A.snap_rate),pct(B.snap_rate),A.snap_rate,B.snap_rate,"low")+
-      row("Low-access population share",pct(A.low_access_pop_share),pct(B.low_access_pop_share),A.low_access_pop_share,B.low_access_pop_share,"low");
+    if(cmpMode==="states"){
+      tbody.innerHTML=
+        row("Pop-weighted severity (0–100)", ents.map(function(S){return num(S.rate)?"—":S.rate+" / 100";}), ents.map(function(S){return S.rate;}), "low")+
+        row("Severity level", ents.map(function(S){var t=tierInfo(S.tier);return esc(t?t.label:S.tier);}), ents.map(function(){return null;}), null)+
+        row("Desert-containing counties", ents.map(function(S){return fmt(S.county_count);}), ents.map(function(S){return S.county_count;}), "low")+
+        row("Food-desert tracts (sum)", ents.map(function(S){return fmt(S.num_deserts);}), ents.map(function(S){return S.num_deserts;}), "low")+
+        row("People with low food access (sum)", ents.map(function(S){return fmt(S.people_affected);}), ents.map(function(S){return S.people_affected;}), "low")+
+        row("Population in those counties (sum)", ents.map(function(S){return !num(S.population)?fmt(S.population):"n/a";}), ents.map(function(){return null;}), null)+
+        row("Grocery stores (sum)", ents.map(function(S){return !num(S.stores)?fmt(S.stores):"n/a";}), ents.map(function(S){return S.stores;}), "high")+
+        row("Median family income (pop-weighted)", ents.map(function(S){return !num(S.median_income)?money(S.median_income):"n/a";}), ents.map(function(S){return S.median_income;}), "high")+
+        row("Modelled weekly grocery (pop-weighted)", ents.map(function(S){return !num(S.grocery_weekly)?money(S.grocery_weekly):"n/a";}), ents.map(function(){return null;}), null)+
+        row("Produce share (national constant)", ents.map(function(S){return !num(S.produce_pct)?pct(S.produce_pct):"n/a";}), ents.map(function(){return null;}), null);
+    } else {
+      var tl=function(p){var t=tierInfo(p.tier);return t?t.label:p.tier;};
+      tbody.innerHTML=
+        row("Severity index (0–100)", ents.map(function(A){return A.rate+" / 100";}), ents.map(function(A){return A.rate;}), "low")+
+        row("Severity level", ents.map(function(A){return esc(tl(A));}), ents.map(function(){return null;}), null)+
+        row("Food-desert tracts", ents.map(function(A){return fmt(A.num_deserts);}), ents.map(function(A){return A.num_deserts;}), "low")+
+        row("People with low food access", ents.map(function(A){return fmt(A.people_affected);}), ents.map(function(A){return A.people_affected;}), "low")+
+        row("County population", ents.map(function(A){return !num(A.population)?fmt(A.population)+" ("+(A.pop_year||"")+" est.)":"n/a";}), ents.map(function(){return null;}), null)+
+        row("Grocery stores", ents.map(function(A){return !num(A.stores)?fmt(A.stores)+" ("+(A.stores_year||"")+")":"n/a";}), ents.map(function(A){return A.stores;}), "high")+
+        row("Poverty rate", ents.map(function(A){return pct(A.poverty_rate);}), ents.map(function(A){return A.poverty_rate;}), "low")+
+        row("Median family income", ents.map(function(A){return !num(A.median_income)?money(A.median_income):"n/a";}), ents.map(function(A){return A.median_income;}), "high")+
+        row("Households without a vehicle", ents.map(function(A){return pct(A.no_vehicle_share);}), ents.map(function(A){return A.no_vehicle_share;}), "low")+
+        row("Life expectancy (yrs)", ents.map(function(A){return !num(A.life_expectancy)?A.life_expectancy:"n/a";}), ents.map(function(A){return A.life_expectancy;}), "high")+
+        row("Households receiving SNAP", ents.map(function(A){return pct(A.snap_rate);}), ents.map(function(A){return A.snap_rate;}), "low")+
+        row("Low-access population share", ents.map(function(A){return pct(A.low_access_pop_share);}), ents.map(function(A){return A.low_access_pop_share;}), "low");
+    }
   }
-  function renderDataTable(){ wireCmp("a"); wireCmp("b"); renderCompare(); }
+  function renderDataTable(){
+    wireCmpMode();
+    syncCmpPlaceholders();
+    CMP_SIDES.forEach(wireCmp);
+    renderCompare();
+  }
   renderLanguage();
+
 
   var _p=new URLSearchParams(location.search); var pendingRegion=_p.get("region")||_p.get("prov"); var pendingState=_p.get("state");
   if(pendingRegion||pendingState){ var im=document.getElementById("modal"); if(im) im.classList.remove("open"); }
@@ -820,7 +949,7 @@ window.addEventListener("DOMContentLoaded",function(){
       map.setPaintProperty("division-line","line-opacity",1);
     }
   }
-  function crumbHtml(parts){
+  function panelNavHtml(parts, backAction, backLabel){
     var out=[];
     for(var i=0;i<parts.length;i++){
       if(i) out.push('<span class="sep">›</span>');
@@ -828,17 +957,27 @@ window.addEventListener("DOMContentLoaded",function(){
       if(pt.action) out.push('<button type="button" data-crumb="'+esc(pt.action)+'">'+esc(pt.label)+'</button>');
       else out.push('<span class="here">'+esc(pt.label)+'</span>');
     }
-    return '<div class="p-crumb" id="panel-crumb">'+out.join("")+'</div>';
+    return '<div class="p-nav">'+
+      '<button type="button" class="p-back" id="panel-back" data-back="'+esc(backAction)+'">← Back'+(backLabel?' · '+esc(backLabel):'')+'</button>'+
+      '<div class="p-crumb" id="panel-crumb">'+out.join("")+'</div></div>';
   }
-  function wireCrumb(){
-    var el=document.getElementById("panel-crumb"); if(!el) return;
-    el.querySelectorAll("button[data-crumb]").forEach(function(b){
-      b.onclick=function(){
-        var a=b.getAttribute("data-crumb");
+  function wirePanelNav(){
+    var el=document.getElementById("panel-crumb"); if(el){
+      el.querySelectorAll("button[data-crumb]").forEach(function(b){
+        b.onclick=function(){
+          var a=b.getAttribute("data-crumb");
+          if(a==="national") selectNational();
+          else if(a.indexOf("state:")===0) selectState(a.slice(6));
+        };
+      });
+    }
+    var back=document.getElementById("panel-back"); if(back){
+      back.onclick=function(){
+        var a=back.getAttribute("data-back");
         if(a==="national") selectNational();
         else if(a.indexOf("state:")===0) selectState(a.slice(6));
       };
-    });
+    }
   }
   var CSV_COLS=["code","name","state","state_abbr","tier","severity_rate","people_affected","population","stores","num_deserts","median_income","poverty_rate","snap_rate","grocery_weekly","grocery_scope","produce_pct","setting","low_access_pop_share","no_vehicle_share","life_expectancy"];
   var CSV_HEADER=CSV_COLS.join(",");
@@ -954,11 +1093,11 @@ window.addEventListener("DOMContentLoaded",function(){
       var ct=tierInfo(c.tier);
       return '<button type="button" data-code="'+esc(c.code)+'"><span class="dot" style="background:'+ct.color+'"></span><span class="cn">'+esc(c.name)+'<span class="cp">'+fmt(c.people_affected)+' people</span></span><span class="cr">'+(num(c.rate)?"—":c.rate)+'</span></button>';
     }).join("");
-    body.innerHTML=crumbHtml([{label:"United States",action:"national"},{label:S.name,action:null}])+
+    body.innerHTML=panelNavHtml([{label:"United States",action:"national"},{label:S.name,action:null}],"national","United States")+
       '<div class="p-hero"><span class="tier-chip" style="background:'+t.color+'" title="Population-weighted aggregate of desert-containing counties">'+t.label+' state aggregate</span>'+
       '<h2 id="panel-title" tabindex="-1">'+esc(S.name)+'</h2><div class="loc">'+esc(S.state||S.name)+', USA · state summary (desert counties only)</div>'+
       '<div class="score-row"><span class="big" style="color:'+t.color+'">'+(num(S.rate)?"—":S.rate+" / 100")+'</span><span class="lbl">pop-weighted severity (custom index)</span></div>'+
-      '</div>'+
+      panelActionsHtml({copyDataId:"copydata",copyLinkId:"copylink",downloadId:"download-csv",downloadLabel:tr("downloadStateCsv")})+'</div>'+
       '<div class="narrative">'+narr+'</div><div class="section-t">'+tr("numbers")+'</div><div class="grid">'+
       '<div class="stat"><div class="v">'+fmt(S.county_count)+'</div><div class="k">Desert-containing counties</div></div>'+
       '<div class="stat"><div class="v">'+fmt(S.people_affected)+'</div><div class="k">People with low food access (sum)</div></div>'+
@@ -970,9 +1109,8 @@ window.addEventListener("DOMContentLoaded",function(){
       '<div class="stat"><div class="v">'+(!num(S.produce_pct)?pct(S.produce_pct):tr("noData"))+'</div><div class="k">Produce share (national constant)</div></div>'+
       '</div>'+
       '<div class="section-t">Counties by severity</div><div class="county-list" id="state-county-list">'+listHtml+'</div>'+
-      panelActionsHtml({copyDataId:"copydata",copyLinkId:"copylink",downloadId:"download-csv",downloadLabel:tr("downloadStateCsv")})+
       '<div class="p-foot">'+tr("panelFoot")+' State figures are <b>aggregates of desert-containing counties only</b> — not official statewide USDA rates.</div>';
-    wireCrumb();
+    wirePanelNav();
     var list=document.getElementById("state-county-list");
     if(list) list.querySelectorAll("button[data-code]").forEach(function(b){
       b.onclick=function(){ var f=BYCODE[b.getAttribute("data-code")]; if(f) selectDivision(f.properties,f.geometry,true); };
@@ -1007,7 +1145,7 @@ window.addEventListener("DOMContentLoaded",function(){
     var worstL=p.worst; if(typeof worstL==="string"){try{worstL=JSON.parse(worstL);}catch(e){worstL=[];}}
     var narr="<b>"+esc(displayName)+"</b> ("+esc(displayProv)+") contains <b>"+fmt(p.num_deserts)+" food-desert "+(p.num_deserts===1?"tract":"tracts")+"</b> where about <b>"+fmt(p.people_affected)+" residents</b> have low supermarket access (pipeline estimate). Custom severity is <b>"+p.rate+" / 100</b> — <b>"+nc+"</b> the mean of "+USNAT+" across the 2,083 desert-containing counties on this map.";
     var tierChipText=t.label+" "+tr("tierChip");
-    body.innerHTML=crumbHtml([{label:"United States",action:"national"},{label:displayProv,action:"state:"+displayProv},{label:displayName,action:null}])+
+    body.innerHTML=panelNavHtml([{label:"United States",action:"national"},{label:displayProv,action:"state:"+displayProv},{label:displayName,action:null}],"state:"+displayProv,displayProv)+
       '<div class="p-hero"><span class="tier-chip" style="background:'+t.color+'" title="'+esc(tr("ranked"))+'">'+tierChipText+'</span>'+
       '<h2 id="panel-title" tabindex="-1">'+esc(displayName)+'</h2><div class="loc">'+(displayOfficial?esc(displayOfficial)+' · ':'')+esc(displayProv)+', USA · '+tr("censusDivision")+'<span class="setting-badge">'+(COPY.en.badge[p.setting]||p.setting||'')+'</span></div>'+
       '<div class="score-row"><span class="big" style="color:'+t.color+'">'+(p.rate+" / 100")+'</span><span class="lbl">'+tr("lowIncomeLabel")+'</span></div>'+
@@ -1036,7 +1174,7 @@ window.addEventListener("DOMContentLoaded",function(){
         (!num(lp)?cmpRow(tr("cmpLettuce"),lp,USLET,2,6.5,"",false,"US $",money2(lp)):"")+
       '</div>'+
       '<div class="p-foot">'+tr("panelFoot")+'</div>';
-    wireCrumb();
+    wirePanelNav();
     var cd=document.getElementById("copydata"); if(cd) cd.onclick=function(){copyPlain(cd, buildCountyCopyText(p));};
     var cl=document.getElementById("copylink"); if(cl) cl.onclick=function(){copyPlain(cl, location.origin+langUrl(p.code));};
     var dl=document.getElementById("download-csv"); if(dl) dl.onclick=function(){
