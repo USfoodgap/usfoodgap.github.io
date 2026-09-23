@@ -304,10 +304,12 @@
     body.panel-open .legend,body.panel-open .filters{display:none}
     .modal{padding:24px 20px;max-height:86vh}
     /* Splash: pin Enter CTA; body scrolls above it */
+    #modal.modal-bg{overflow:hidden;overscroll-behavior:none;align-items:center;justify-content:center}
     #modal .modal{display:flex;flex-direction:column;max-height:92vh;max-height:min(92dvh,92vh);overflow:hidden;padding:20px 18px 14px}
     #modal .modal .splash-scroll{flex:1 1 auto;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
     #modal .modal .splash-footer{flex:0 0 auto;padding-top:12px;margin-top:4px;border-top:1px solid var(--line)}
     #modal .modal .splash-footer .cta{margin-top:0}
+    #modal .modal .splash-footer .splash-hint{font-size:12px;line-height:1.45;margin:10px 0 0;color:#cbd5df}
     #modal .modal .splash-footer .version{margin-top:8px}
     #modal .modal h1{font-size:clamp(22px,5.8vw,28px);line-height:1.15;margin:0 0 10px}
     #modal .modal p{font-size:13px;line-height:1.55;margin:8px 0}
@@ -324,10 +326,14 @@
   /* —— polish (standalone US) —— */
   .map-vignette{position:absolute;inset:0;z-index:2;pointer-events:none;
     background:radial-gradient(ellipse at center,transparent 45%,rgba(8,11,15,.55) 100%);}
-  #modal.modal-bg{background:rgba(4,7,10,.82);backdrop-filter:blur(10px);}
+  #modal.modal-bg{background:rgba(4,7,10,.82);backdrop-filter:blur(10px);overflow:hidden;overscroll-behavior:none}
   #modal .modal{max-width:620px;border:1px solid rgba(240,86,46,.35);
     box-shadow:0 24px 80px rgba(0,0,0,.65),0 0 0 1px rgba(255,255,255,.04) inset;
-    animation:splashIn .55s cubic-bezier(.2,.8,.2,1) both;}
+    animation:splashIn .55s cubic-bezier(.2,.8,.2,1) both;
+    display:flex;flex-direction:column;max-height:92vh;max-height:min(92dvh,92vh);overflow:hidden}
+  #modal .modal .splash-scroll{flex:1 1 auto;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+  #modal .modal .splash-footer{flex:0 0 auto}
+  #modal .modal .splash-footer .splash-hint{font-size:12.5px;line-height:1.5;margin:10px 0 0;color:#cbd5df}
   @keyframes splashIn{from{opacity:0;transform:translateY(18px) scale(.98)}to{opacity:1;transform:none}}
   @media (prefers-reduced-motion:reduce){#modal .modal{animation:none}}
   #modal .modal h1{font-size:clamp(26px,3.4vw,34px);line-height:1.12;
@@ -427,7 +433,6 @@
     <h1>Which American communities face the greatest risk of food insecurity?</h1>
     <p>When a household's income falls too low, reliable access to enough healthy food is often the first thing to go. Low income is the strongest predictor of household food insecurity in the United States.</p>
     <p>This map shows <b>2,083 U.S. counties that contain food-desert tracts</b> — not every U.S. county — shaded by a <b>custom severity index</b> from USDA Food Access Research Atlas (2019) tract data.</p>
-    <p>Click a state for statewide stats, then dig into counties for desert tracts, people with low food access, stores, and modelled grocery context. Severity is <b>not</b> a published USDA county LILA percentage.</p>
     <div class="kstat">
       <div><div class="n" id="m-areas">—</div><div class="l">counties with deserts</div></div>
       <div><div class="n" id="m-people">—</div><div class="l">people with low food access</div></div>
@@ -445,6 +450,7 @@
     </div>
     <div class="splash-footer">
     <button class="cta" id="enter-btn">Enter the national map</button>
+    <p class="splash-hint">Click a state for statewide stats, then dig into counties for desert tracts, people with low food access, stores, and modelled grocery context. Severity is <b>not</b> a published USDA county LILA percentage.</p>
     <div class="version">Version <span id="app-version">—</span><span class="version-credit"> · Chris Householder</span></div>
     </div>
   </div>
@@ -590,11 +596,11 @@ window.addEventListener("DOMContentLoaded",function(){
       '<h1 id="about-title">Which American communities face the greatest risk of food insecurity?</h1>'+
       '<p>When a household\'s income falls too low, reliable access to enough healthy food is often the first thing to go. Low income is the strongest predictor of household food insecurity in the United States.</p>'+
       '<p>This map shows <b>2,083 U.S. counties that contain food-desert tracts</b> — not every U.S. county — shaded by a <b>custom severity index</b> from USDA Food Access Research Atlas (2019) tract data.</p>'+
-      '<p>Click a state for statewide stats, then dig into counties for desert tracts, people with low food access, stores, and modelled grocery context. Severity is <b>not</b> a published USDA county LILA percentage.</p>'+
       '<div class="kstat"><div><div class="n" id="m-areas">—</div><div class="l">counties with deserts</div></div><div><div class="n" id="m-people">—</div><div class="l">people with low food access</div></div><div><div class="n" id="m-provs">—</div><div class="l">states + DC</div></div></div>'+
       '<div class="src">Data: <a href="https://www.ers.usda.gov/data-products/food-access-research-atlas/" target="_blank" rel="noopener">USDA ERS Food Access Research Atlas (2019)</a>, CDC USALEEP, U.S. Census, USDA Food Environment Atlas, and <a href="https://www.bls.gov/cex/" target="_blank" rel="noopener">BLS Consumer Expenditure Survey</a> (national food-at-home baseline used to model weekly grocery estimates). Basemap © OpenFreeMap · OpenStreetMap contributors. Built from U.S. federal public-domain sources; not an official USDA, CDC, Census, or BLS product. Privacy: static site, no accounts, no forms, no cookies, no analytics. See <a href="PRIVACY.md" target="_blank" rel="noopener">Privacy note</a>.</div>'+
       '</div><div class="splash-footer">'+
       '<button class="cta" id="enter-btn">Enter the national map</button>'+
+      '<p class="splash-hint">Click a state for statewide stats, then dig into counties for desert tracts, people with low food access, stores, and modelled grocery context. Severity is <b>not</b> a published USDA county LILA percentage.</p>'+
       '<div class="version">Version <span id="app-version">—</span><span class="version-credit"> · Chris Householder</span></div></div>';
   }
 
