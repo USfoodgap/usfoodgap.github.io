@@ -344,7 +344,7 @@
   .wordmark{font-size:20px}
   .legend .note b{color:#fff}
 
-  /* map hover tooltip (desktop) */
+  /* map name tip: desktop hover + mobile finger-follow */
   #map-tip{
     position:fixed;z-index:15;display:none;pointer-events:none;
     max-width:min(280px,70vw);padding:6px 10px;border-radius:8px;
@@ -354,6 +354,7 @@
     transform:translate(12px,14px);
   }
   #map-tip.open{display:block}
+  #map-tip.above{transform:translate(-50%,calc(-100% - 18px))}
 </style>
 </head>
 <body>
@@ -912,7 +913,8 @@ window.addEventListener("DOMContentLoaded",function(){
       "line-width":["case",["boolean",["feature-state","selected"],false],3,["boolean",["feature-state","hover"],false],2,0.6]}});
     var ph=null;
     var mapTip=document.getElementById("map-tip");
-    function hideMapTip(){ if(mapTip){ mapTip.classList.remove("open"); mapTip.setAttribute("aria-hidden","true"); mapTip.textContent=""; } }
+    var suppressMouseUntil=0;
+    function hideMapTip(){ if(mapTip){ mapTip.classList.remove("open","above"); mapTip.setAttribute("aria-hidden","true"); mapTip.textContent=""; } }
     function hoverTipLabel(p){
       var nm=nameOf(p)||"", st=p.state||"", prov=provinceOf(p)||"";
       /* Match click: national / zoomed-out → state; else county (ST only when state not already focused). */
@@ -920,22 +922,58 @@ window.addEventListener("DOMContentLoaded",function(){
       if(focusedState) return nm;
       return st?(nm+", "+st):nm;
     }
-    function showMapTip(e,p){
+    function setHoverId(id){
+      if(ph===id) return;
+      if(ph!==null){ try{map.setFeatureState({source:"divisions",id:ph},{hover:false});}catch(err){} }
+      ph=id;
+      if(ph!==null){ try{map.setFeatureState({source:"divisions",id:ph},{hover:true});}catch(err){} }
+    }
+    function showMapTipAt(clientX,clientY,p,above){
       if(!mapTip||!p) return;
       var label=hoverTipLabel(p); if(!label){ hideMapTip(); return; }
       mapTip.textContent=label;
+      mapTip.classList.toggle("above",!!above);
       mapTip.classList.add("open");
       mapTip.setAttribute("aria-hidden","false");
+      mapTip.style.left=clientX+"px"; mapTip.style.top=clientY+"px";
+    }
+    function showMapTip(e,p){
       var x=(e.originalEvent&&e.originalEvent.clientX!=null)?e.originalEvent.clientX:e.point.x;
       var y=(e.originalEvent&&e.originalEvent.clientY!=null)?e.originalEvent.clientY:e.point.y;
-      mapTip.style.left=x+"px"; mapTip.style.top=y+"px";
+      showMapTipAt(x,y,p,false);
+    }
+    function tipFromMapPoint(point,clientX,clientY,above){
+      if(!point){ setHoverId(null); hideMapTip(); return; }
+      var feats=map.queryRenderedFeatures(point,{layers:["division-fill"]});
+      if(!feats||!feats.length){ setHoverId(null); hideMapTip(); return; }
+      var f=feats[0];
+      setHoverId(f.id);
+      showMapTipAt(clientX,clientY,f.properties,above);
+    }
+    function touchClient(e){
+      var oe=e.originalEvent||e;
+      var t=(oe.touches&&oe.touches[0])||(oe.changedTouches&&oe.changedTouches[0]);
+      return t?{x:t.clientX,y:t.clientY}:null;
+    }
+    function onMapTouch(e){
+      suppressMouseUntil=Date.now()+600;
+      var c=touchClient(e); if(!c) return;
+      tipFromMapPoint(e.point,c.x,c.y,true);
+    }
+    function endMapTouch(){
+      suppressMouseUntil=Date.now()+600;
+      setHoverId(null); hideMapTip();
     }
     map.on("mousemove","division-fill",function(e){var f=e.features[0]; if(!f) return; map.getCanvas().style.cursor="pointer";
-      if(MOB()){ hideMapTip(); return; }
-      if(ph!==f.id){ if(ph!==null) map.setFeatureState({source:"divisions",id:ph},{hover:false}); ph=f.id; map.setFeatureState({source:"divisions",id:ph},{hover:true}); }
+      if(Date.now()<suppressMouseUntil) return;
+      setHoverId(f.id);
       showMapTip(e,f.properties);});
-    window.__clearHover=function(){ if(ph!==null){ try{map.setFeatureState({source:"divisions",id:ph},{hover:false});}catch(e){} ph=null; } hideMapTip(); };
-    map.on("mouseleave","division-fill",function(){map.getCanvas().style.cursor=""; if(ph!==null){map.setFeatureState({source:"divisions",id:ph},{hover:false}); ph=null;} hideMapTip();});
+    map.on("touchstart",onMapTouch);
+    map.on("touchmove",onMapTouch);
+    map.on("touchend",endMapTouch);
+    map.on("touchcancel",endMapTouch);
+    window.__clearHover=function(){ setHoverId(null); hideMapTip(); };
+    map.on("mouseleave","division-fill",function(){ if(Date.now()<suppressMouseUntil) return; map.getCanvas().style.cursor=""; setHoverId(null); hideMapTip();});
     map.on("click","division-fill",function(e){
       var f=e.features[0]; if(!f) return;
       var p=f.properties, prov=provinceOf(p);
