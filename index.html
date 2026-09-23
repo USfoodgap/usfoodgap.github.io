@@ -343,6 +343,17 @@
   header{padding:12px 18px}
   .wordmark{font-size:20px}
   .legend .note b{color:#fff}
+
+  /* map hover tooltip (desktop) */
+  #map-tip{
+    position:fixed;z-index:15;display:none;pointer-events:none;
+    max-width:min(280px,70vw);padding:6px 10px;border-radius:8px;
+    border:1px solid var(--line);background:rgba(18,24,31,.96);color:var(--text);
+    font:650 12.5px/1.35 var(--sans);letter-spacing:.01em;
+    box-shadow:var(--shadow);white-space:nowrap;backdrop-filter:blur(8px);
+    transform:translate(12px,14px);
+  }
+  #map-tip.open{display:block}
 </style>
 </head>
 <body>
@@ -358,6 +369,7 @@
 </noscript>
 <a class="skip-link" href="#data-table-modal" id="skip-data">Skip to comparison</a>
 <div id="map" role="img" aria-label="Interactive choropleth map of U.S. counties with food deserts by severity index"></div>
+<div id="map-tip" role="tooltip" aria-hidden="true"></div>
 <div class="map-vignette" aria-hidden="true"></div>
 <div id="status" class="sr-only" aria-live="polite"></div>
 <div class="basemap-notice" id="basemap-notice" role="status" aria-live="polite">Basemap unavailable. Data layer still works.</div>
@@ -899,11 +911,31 @@ window.addEventListener("DOMContentLoaded",function(){
       "line-color":["case",["boolean",["feature-state","selected"],false],"#ffffff",["boolean",["feature-state","hover"],false],"#f0562e","rgba(150,160,170,0.35)"],
       "line-width":["case",["boolean",["feature-state","selected"],false],3,["boolean",["feature-state","hover"],false],2,0.6]}});
     var ph=null;
+    var mapTip=document.getElementById("map-tip");
+    function hideMapTip(){ if(mapTip){ mapTip.classList.remove("open"); mapTip.setAttribute("aria-hidden","true"); mapTip.textContent=""; } }
+    function hoverTipLabel(p){
+      var nm=nameOf(p)||"", st=p.state||"", prov=provinceOf(p)||"";
+      /* Match click: national / zoomed-out → state; else county (ST only when state not already focused). */
+      if(viewMode==="national" || (!focusedState && map.getZoom()<5.5)) return prov||nm;
+      if(focusedState) return nm;
+      return st?(nm+", "+st):nm;
+    }
+    function showMapTip(e,p){
+      if(!mapTip||!p) return;
+      var label=hoverTipLabel(p); if(!label){ hideMapTip(); return; }
+      mapTip.textContent=label;
+      mapTip.classList.add("open");
+      mapTip.setAttribute("aria-hidden","false");
+      var x=(e.originalEvent&&e.originalEvent.clientX!=null)?e.originalEvent.clientX:e.point.x;
+      var y=(e.originalEvent&&e.originalEvent.clientY!=null)?e.originalEvent.clientY:e.point.y;
+      mapTip.style.left=x+"px"; mapTip.style.top=y+"px";
+    }
     map.on("mousemove","division-fill",function(e){var f=e.features[0]; if(!f) return; map.getCanvas().style.cursor="pointer";
-      if(MOB())return;
-      if(ph!==f.id){ if(ph!==null) map.setFeatureState({source:"divisions",id:ph},{hover:false}); ph=f.id; map.setFeatureState({source:"divisions",id:ph},{hover:true}); }});
-    window.__clearHover=function(){ if(ph!==null){ try{map.setFeatureState({source:"divisions",id:ph},{hover:false});}catch(e){} ph=null; } };
-    map.on("mouseleave","division-fill",function(){map.getCanvas().style.cursor=""; if(ph!==null){map.setFeatureState({source:"divisions",id:ph},{hover:false}); ph=null;}});
+      if(MOB()){ hideMapTip(); return; }
+      if(ph!==f.id){ if(ph!==null) map.setFeatureState({source:"divisions",id:ph},{hover:false}); ph=f.id; map.setFeatureState({source:"divisions",id:ph},{hover:true}); }
+      showMapTip(e,f.properties);});
+    window.__clearHover=function(){ if(ph!==null){ try{map.setFeatureState({source:"divisions",id:ph},{hover:false});}catch(e){} ph=null; } hideMapTip(); };
+    map.on("mouseleave","division-fill",function(){map.getCanvas().style.cursor=""; if(ph!==null){map.setFeatureState({source:"divisions",id:ph},{hover:false}); ph=null;} hideMapTip();});
     map.on("click","division-fill",function(e){
       var f=e.features[0]; if(!f) return;
       var p=f.properties, prov=provinceOf(p);
