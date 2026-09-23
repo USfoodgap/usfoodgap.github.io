@@ -227,11 +227,36 @@
   .cmp-list button{display:block;width:100%;text-align:left;padding:9px 11px;background:transparent;border:0;border-bottom:1px solid var(--line);color:var(--text);font-size:13px;cursor:pointer}
   .cmp-list button:last-child{border-bottom:0}
   .cmp-list button:hover{background:rgba(240,86,46,.14)}
+  .cmp-match-count{padding:7px 11px;font-size:11px;font-weight:700;color:var(--faint);text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid var(--line);pointer-events:none;user-select:none}
+  .table-actions{display:flex;gap:10px;margin-top:18px;flex-wrap:wrap;align-items:stretch}
+  .table-actions .cta{flex:1;margin-top:0;min-width:140px}
+  .table-actions .cta.secondary{background:rgba(255,255,255,.06);border:1px solid var(--line);color:var(--text);font-weight:700}
+  .table-actions .cta.secondary:hover{filter:none;background:rgba(255,255,255,.12)}
+  .table-actions .cta[hidden]{display:none!important}
+  .table-actions .cta:disabled{opacity:.4;cursor:not-allowed;filter:none}
+  .feedback-chip{position:absolute;z-index:5;bottom:24px;right:54px;display:inline-flex;align-items:center;gap:7px;
+    min-height:36px;padding:6px 12px 6px 10px;border-radius:999px;border:1px solid var(--line);
+    background:rgba(18,24,31,.82);color:var(--muted);font-size:12.5px;font-weight:650;cursor:pointer;
+    backdrop-filter:blur(8px);box-shadow:var(--shadow);pointer-events:auto;transition:.15s}
+  .feedback-chip:hover{background:rgba(255,255,255,.1);color:var(--text);border-color:#3a4654}
+  .feedback-chip svg{width:15px;height:15px;flex:none;opacity:.9}
+  .feedback-sheet{max-width:440px}
+  .feedback-lead{margin:0 0 14px!important;font-size:13px!important;color:var(--muted)!important}
+  .fb-field{display:block;margin:0 0 12px;font-size:12px;font-weight:650;color:var(--muted)}
+  .fb-field .opt{font-weight:500;color:var(--faint)}
+  .fb-field input,.fb-field textarea{display:block;width:100%;margin-top:6px;padding:10px 12px;border-radius:9px;border:1px solid var(--line);
+    background:rgba(255,255,255,.04);color:var(--text);font:inherit;font-size:14px;font-weight:500;resize:vertical}
+  .fb-field textarea{min-height:110px;line-height:1.45}
+  .fb-toast{position:fixed;z-index:40;left:50%;bottom:28px;transform:translateX(-50%) translateY(12px);opacity:0;pointer-events:none;
+    max-width:min(420px,calc(100vw - 32px));padding:10px 14px;border-radius:10px;border:1px solid var(--line);
+    background:rgba(18,24,31,.96);color:var(--text);font-size:13px;font-weight:650;box-shadow:var(--shadow);
+    backdrop-filter:blur(8px);transition:opacity .2s,transform .2s}
+  .fb-toast.open{opacity:1;transform:translateX(-50%) translateY(0)}
   @media print{
     @page{size:letter;margin:.55in}
     html,body{height:auto;overflow:visible;background:#fff;color:#111}
     body{font-size:11pt}
-    #map,header,.search,.filters,.filter-toast,.legend,.mobile-tools,.modal-bg,.basemap-notice,.skip-link,.maplibregl-control-container,.maplibregl-ctrl{display:none!important}
+    #map,header,.search,.filters,.filter-toast,.legend,.mobile-tools,.modal-bg,.basemap-notice,.skip-link,.maplibregl-control-container,.maplibregl-ctrl,.feedback-chip,.fb-toast{display:none!important}
     .panel{position:static!important;transform:none!important;width:100%!important;max-width:none!important;height:auto!important;overflow:visible!important;
       background:#fff!important;color:#111!important;border:0!important;box-shadow:none!important;padding:0!important}
     .panel:not(.open) #panel-body::before{content:"Open a region panel before printing.";display:block;color:#444;font-weight:700}
@@ -293,6 +318,7 @@
     .maplibregl-ctrl-bottom-right{bottom:10px}
     .maplibregl-ctrl-bottom-left{bottom:10px}
     .maplibregl-ctrl-group{display:none}
+    .feedback-chip{bottom:calc(72px + env(safe-area-inset-bottom));right:12px}
     .basemap-notice{left:12px;right:12px;width:auto;bottom:calc(150px + env(safe-area-inset-bottom))}
     .filter-toast{left:12px;right:12px;top:auto;width:auto;max-width:none;bottom:calc(150px + env(safe-area-inset-bottom))}
     .panel{overscroll-behavior:contain;visibility:hidden;transition:transform .32s cubic-bezier(.4,0,.2,1),visibility 0s .35s}
@@ -509,9 +535,37 @@
     </div>
     <div class="table-wrap"><table><thead><tr id="cmp-thead-row"><th scope="col">Metric</th><th scope="col" id="cmp-h-a">A</th><th scope="col" id="cmp-h-b">B</th></tr></thead>
       <tbody id="data-table-body"><tr><td colspan="3">Select up to 4 counties or states above to compare them side by side.</td></tr></tbody></table></div>
-    <button class="cta" id="data-table-close">Close</button>
+    <div class="table-actions">
+      <button type="button" class="cta secondary" id="cmp-csv-btn" hidden disabled>Download CSV</button>
+      <button class="cta" id="data-table-close">Close</button>
+    </div>
   </div>
 </div>
+<button type="button" class="feedback-chip" id="feedback-btn" aria-haspopup="dialog" aria-controls="feedback-modal" title="Send feedback">
+  <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M20 2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h4l4 4 4-4h4c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/></svg>
+  <span>Feedback</span>
+</button>
+<div class="modal-bg" id="feedback-modal">
+  <div class="modal feedback-sheet" role="dialog" aria-modal="true" aria-labelledby="feedback-title">
+    <div class="tag">FEEDBACK</div>
+    <h1 id="feedback-title">Send feedback</h1>
+    <p class="feedback-lead">Opens your email app with a draft to <b>foodgap-feedback@agentmail.to</b>. Nothing is uploaded from this page.</p>
+    <label class="fb-field">Name <span class="opt">(optional)</span>
+      <input type="text" id="fb-name" name="name" autocomplete="name" maxlength="120" />
+    </label>
+    <label class="fb-field">Reply-to email <span class="opt">(optional)</span>
+      <input type="email" id="fb-email" name="email" autocomplete="email" maxlength="160" />
+    </label>
+    <label class="fb-field">Comment
+      <textarea id="fb-msg" name="comment" required rows="5" maxlength="4000" placeholder="What should we know?"></textarea>
+    </label>
+    <div class="table-actions">
+      <button type="button" class="cta secondary" id="fb-cancel">Cancel</button>
+      <button type="button" class="cta" id="fb-send">Send</button>
+    </div>
+  </div>
+</div>
+<div class="fb-toast" id="fb-toast" role="status" aria-live="polite"></div>
 <script src="data.js?v=5" defer></script>
 <script src="maplibre-gl.js" defer></script>
 <script>
@@ -532,6 +586,7 @@ window.addEventListener("DOMContentLoaded",function(){
   var US=window.US_DATA, USNAT=window.US_NATIONAL, USPEND=window.US_SPEND||{weekly:119,produce_pct:12.0}, USMED=window.US_MEDINC||78900, USX=window.USA_EXTRA||{}, USLET=window.US_LETTUCE||3.28;
   var esc=function(s){return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");};
   var deacc=function(s){try{return s.normalize("NFD").replace(/[̀-ͯ]/g,"");}catch(e){return s;}};
+  var normQ=function(s){return deacc(String(s==null?"":s).trim().toLowerCase()).replace(/,/g," ").replace(/\s+/g," ").trim();};
   var MOTION=window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
   var dur=function(ms){return MOTION?0:ms;};
   var TIER_COLORS={critical:"#e64545",severe:"#f0562e",moderate:"#fb9a3c",minor:"#fdcc5c"};
@@ -704,16 +759,20 @@ window.addEventListener("DOMContentLoaded",function(){
     var input=document.getElementById("cmp-"+side), list=document.getElementById("cmp-"+side+"-list");
     if(!input||input._wired) return; input._wired=true;
     input.oninput=function(){
-      var q=deacc(input.value.trim().toLowerCase()); cmpSel[side]=null;
+      var q=normQ(input.value); cmpSel[side]=null;
       if(q.length<1){list.classList.remove("open");list.innerHTML="";renderCompare();return;}
       var hits=[], i;
+      function matchCountHtml(n){
+        if(n<1) return "";
+        return '<div class="cmp-match-count" role="status" aria-live="polite">'+(n===1?"1 match":(n+" matches"))+'</div>';
+      }
       if(cmpMode==="states"){
         var keys=Object.keys(STATE_INDEX).sort();
         for(i=0;i<keys.length&&hits.length<10;i++){
           var sn=keys[i];
-          if(deacc(sn.toLowerCase()).indexOf(q)>-1) hits.push({kind:"state",key:sn,label:sn});
+          if(normQ(sn).indexOf(q)>-1) hits.push({kind:"state",key:sn,label:sn});
         }
-        list.innerHTML=hits.length?hits.map(function(h){return '<button type="button" data-key="'+esc(h.key)+'">'+esc(h.label)+'</button>';}).join(""):'<button type="button" disabled>No matching state</button>';
+        list.innerHTML=matchCountHtml(hits.length)+(hits.length?hits.map(function(h){return '<button type="button" data-key="'+esc(h.key)+'">'+esc(h.label)+'</button>';}).join(""):'<button type="button" disabled>No matching state</button>');
       } else {
         if(!wireCmp._stMaps){
           var nm2ab={}, ab2nm={}, si, sp;
@@ -759,8 +818,9 @@ window.addEventListener("DOMContentLoaded",function(){
           if(an<bn) return -1; if(an>bn) return 1;
           return 0;
         });
+        var totalHits=hits.length;
         if(hits.length>40) hits=hits.slice(0,40);
-        list.innerHTML=hits.length?hits.map(function(p){return '<button type="button" data-code="'+esc(p.code)+'">'+esc(p.name)+' <span style="color:var(--muted)">· '+esc(p.province)+'</span></button>';}).join(""):'<button type="button" disabled>No matching county</button>';
+        list.innerHTML=matchCountHtml(totalHits)+(hits.length?hits.map(function(p){return '<button type="button" data-code="'+esc(p.code)+'">'+esc(p.name)+' <span style="color:var(--muted)">· '+esc(p.province)+'</span></button>';}).join(""):'<button type="button" disabled>No matching county</button>');
       }
       list.classList.add("open");
       list.querySelectorAll("button[data-code]").forEach(function(b){b.onclick=function(){
@@ -791,6 +851,22 @@ window.addEventListener("DOMContentLoaded",function(){
       b.onclick=function(){ setCmpMode(b.getAttribute("data-cmp-mode")); };
     });
   }
+  var lastCmpExport=null;
+  function syncCmpCsvBtn(){
+    var btn=document.getElementById("cmp-csv-btn"); if(!btn) return;
+    var ok=!!(lastCmpExport&&lastCmpExport.labels&&lastCmpExport.labels.length>=1&&lastCmpExport.rows&&lastCmpExport.rows.length);
+    btn.hidden=!ok; btn.disabled=!ok;
+  }
+  function downloadCompareCsv(){
+    if(!lastCmpExport||!lastCmpExport.labels||!lastCmpExport.labels.length||!lastCmpExport.rows||!lastCmpExport.rows.length) return;
+    var header=["Metric"].concat(lastCmpExport.labels).map(csvEscape).join(",");
+    var lines=lastCmpExport.rows.map(function(r){ return r.map(csvEscape).join(","); });
+    var slugParts=lastCmpExport.labels.map(function(l){ return slugFile(String(l).replace(/\s*·\s*/g,"-")); }).filter(Boolean);
+    var slug=slugParts.join("-")||"selection";
+    if(slug.length>100) slug=slug.slice(0,100).replace(/-+$/g,"");
+    var fn="food-gap-compare-"+lastCmpExport.mode+"-"+slug+".csv";
+    downloadCsvBlob(fn, header+"\n"+lines.join("\n")+"\n");
+  }
   function renderCompare(){
     var tbody=document.getElementById("data-table-body"); if(!tbody) return;
     var theadRow=document.getElementById("cmp-thead-row");
@@ -820,11 +896,14 @@ window.addEventListener("DOMContentLoaded",function(){
     }
     if(ents.length<2){
       tbody.innerHTML='<tr><td colspan="'+(colCount+1)+'">'+esc(ph.empty)+'</td></tr>';
+      lastCmpExport=null; syncCmpCsvBtn();
       return;
     }
+    var csvRows=[];
     function cell(v,win){var col=win===null?"var(--text)":(win?"var(--good)":"var(--moderate)");
-      return '<td class="num" style="font-weight:700;color:'+col+'">'+v+'</td>';}
+      return '<td class="num" style="font-weight:700;color:'+col+'">'+esc(v)+'</td>';}
     function row(label, vals, raws, better){
+      csvRows.push([label].concat(vals.map(function(v){ return v==null?"":String(v); })));
       var wins=vals.map(function(){return null;});
       if(better){
         var valid=[], i;
@@ -846,12 +925,12 @@ window.addEventListener("DOMContentLoaded",function(){
       }
       var cells="";
       for(var j=0;j<vals.length;j++) cells+=cell(vals[j],wins[j]);
-      return '<tr><td>'+label+'</td>'+cells+'</tr>';
+      return '<tr><td>'+esc(label)+'</td>'+cells+'</tr>';
     }
     if(cmpMode==="states"){
       tbody.innerHTML=
         row("Pop-weighted severity (0–100)", ents.map(function(S){return num(S.rate)?"—":S.rate+" / 100";}), ents.map(function(S){return S.rate;}), "low")+
-        row("Severity level", ents.map(function(S){var t=tierInfo(S.tier);return esc(t?t.label:S.tier);}), ents.map(function(){return null;}), null)+
+        row("Severity level", ents.map(function(S){var t=tierInfo(S.tier);return t?t.label:S.tier;}), ents.map(function(){return null;}), null)+
         row("Desert-containing counties", ents.map(function(S){return fmt(S.county_count);}), ents.map(function(S){return S.county_count;}), "low")+
         row("Food-desert tracts (sum)", ents.map(function(S){return fmt(S.num_deserts);}), ents.map(function(S){return S.num_deserts;}), "low")+
         row("People with low food access (sum)", ents.map(function(S){return fmt(S.people_affected);}), ents.map(function(S){return S.people_affected;}), "low")+
@@ -864,7 +943,7 @@ window.addEventListener("DOMContentLoaded",function(){
       var tl=function(p){var t=tierInfo(p.tier);return t?t.label:p.tier;};
       tbody.innerHTML=
         row("Severity index (0–100)", ents.map(function(A){return A.rate+" / 100";}), ents.map(function(A){return A.rate;}), "low")+
-        row("Severity level", ents.map(function(A){return esc(tl(A));}), ents.map(function(){return null;}), null)+
+        row("Severity level", ents.map(function(A){return tl(A);}), ents.map(function(){return null;}), null)+
         row("Food-desert tracts", ents.map(function(A){return fmt(A.num_deserts);}), ents.map(function(A){return A.num_deserts;}), "low")+
         row("People with low food access", ents.map(function(A){return fmt(A.people_affected);}), ents.map(function(A){return A.people_affected;}), "low")+
         row("County population", ents.map(function(A){return !num(A.population)?fmt(A.population)+" ("+(A.pop_year||"")+" est.)":"n/a";}), ents.map(function(){return null;}), null)+
@@ -876,6 +955,8 @@ window.addEventListener("DOMContentLoaded",function(){
         row("Households receiving SNAP", ents.map(function(A){return pct(A.snap_rate);}), ents.map(function(A){return A.snap_rate;}), "low")+
         row("Low-access population share", ents.map(function(A){return pct(A.low_access_pop_share);}), ents.map(function(A){return A.low_access_pop_share;}), "low");
     }
+    lastCmpExport={mode:cmpMode,labels:labels.slice(),rows:csvRows};
+    syncCmpCsvBtn();
   }
   function renderDataTable(){
     wireCmpMode();
@@ -1384,7 +1465,7 @@ window.addEventListener("DOMContentLoaded",function(){
     panel.addEventListener("touchcancel",function(){ drag=false; dy=0; panel.style.transition=""; panel.style.transform=""; });
   })();
   // mobile: swipe to dismiss the three modals — down from the top, or keep swiping up past the end
-  (function(){ [["modal"],["method"],["data-table-modal"]].forEach(function(d){
+  (function(){ [["modal"],["method"],["data-table-modal"],["feedback-modal"]].forEach(function(d){
       var bg=document.getElementById(d[0]); if(!bg)return; var m=bg.querySelector(".modal"); if(!m)return;
       var close=function(){ if(d[0]==="data-table-modal"&&typeof closeDataTable==="function") closeDataTable(); else bg.classList.remove("open"); };
       var sy=null;
@@ -1465,30 +1546,29 @@ window.addEventListener("DOMContentLoaded",function(){
       else { var f=BYCODE[h.code]; selectDivision(f.properties,f.geometry,true); } }; });
   }
   searchEl.oninput=function(){
-    var q=searchEl.value.trim().toLowerCase();
+    var q=normQ(searchEl.value);
     if(q.length<2){ closeSearchResults(); return; }
-    q=deacc(q);
     searchHits=[];
     Object.keys(STATE_INDEX).forEach(function(sn){
       if(searchHits.length>=3) return;
-      var dn=deacc(sn.toLowerCase());
+      var dn=normQ(sn);
       if(dn.indexOf(q)===0 || dn===q) searchHits.push({t:"s",name:sn});
     });
     Object.keys(STATE_INDEX).forEach(function(sn){
       if(searchHits.length>=4) return;
-      var dn=deacc(sn.toLowerCase());
+      var dn=normQ(sn);
       if(dn.indexOf(q)>0){
         var seen=false; for(var k=0;k<searchHits.length;k++){ if(searchHits[k].t==="s"&&searchHits[k].name===sn){ seen=true; break; } }
         if(!seen) searchHits.push({t:"s",name:sn});
       }
     });
     for(var i=0;i<US.features.length&&searchHits.length<8;i++){var p=US.features[i].properties;
-      var target=p.name+" "+(p.official||"")+" "+p.province+" "+(p.name_fr||"")+" "+(p.official_fr||"")+" "+(p.province_fr||"");
-      if(deacc(target.toLowerCase()).indexOf(q)>-1) searchHits.push({t:"d",p:p,g:US.features[i].geometry});}
-    var seen={}; searchHits.forEach(function(h){ seen[deacc(nameOf(h.p).toLowerCase())]=1; });
+      var target=p.name+" "+(p.official||"")+" "+p.province+" "+(p.state||"")+" "+(p.name_fr||"")+" "+(p.official_fr||"")+" "+(p.province_fr||"");
+      if(normQ(target).indexOf(q)>-1) searchHits.push({t:"d",p:p,g:US.features[i].geometry});}
+    var seen={}; searchHits.forEach(function(h){ seen[normQ(nameOf(h.p))]=1; });
     var pass=function(pred){
       for(var j=0;j<CITY.length&&searchHits.length<9;j++){
-        var c=CITY[j], nm=deacc(c[0].toLowerCase());
+        var c=CITY[j], nm=normQ(c[0]);
         if(seen[nm+"|"+c[1]]||seen[nm]) continue;
         if(pred(nm) && BYCODE[c[1]]){ seen[nm+"|"+c[1]]=1; searchHits.push({t:"c",name:c[0],code:c[1]}); }
       }
@@ -1551,15 +1631,87 @@ window.addEventListener("DOMContentLoaded",function(){
   document.getElementById("mobile-filter-btn").onclick=toggleFilters;
   var fcl=document.getElementById("filters-close"); if(fcl) fcl.onclick=toggleFilters;
   document.getElementById("data-table-close").onclick=closeDataTable;
+  var cmpCsvBtn=document.getElementById("cmp-csv-btn"); if(cmpCsvBtn) cmpCsvBtn.onclick=downloadCompareCsv;
+  syncCmpCsvBtn();
   var tableSearch=document.getElementById("table-search"); if(tableSearch) tableSearch.oninput=renderDataTable;
   document.getElementById("skip-data").onclick=function(e){ e.preventDefault(); openDataTable(); };
+  // ---- feedback (mailto → AgentMail inbox; no API keys) ----
+  var feedbackModal=document.getElementById("feedback-modal");
+  var fbToast=document.getElementById("fb-toast"), fbToastTimer=null;
+  function showFbToast(msg){
+    if(!fbToast) return;
+    fbToast.textContent=msg; fbToast.classList.add("open");
+    if(fbToastTimer) clearTimeout(fbToastTimer);
+    fbToastTimer=setTimeout(function(){ fbToast.classList.remove("open"); },3200);
+  }
+  function openFeedback(){
+    if(!feedbackModal) return;
+    closeFiltersQuietly();
+    feedbackModal.classList.add("open");
+    var ta=document.getElementById("fb-msg"); if(ta) setTimeout(function(){ ta.focus(); },30);
+  }
+  function closeFeedback(){ if(feedbackModal) feedbackModal.classList.remove("open"); }
+  function sendFeedback(){
+    var nameEl=document.getElementById("fb-name"), emailEl=document.getElementById("fb-email"), msgEl=document.getElementById("fb-msg");
+    var name=(nameEl&&nameEl.value||"").trim();
+    var email=(emailEl&&emailEl.value||"").trim();
+    var msg=(msgEl&&msgEl.value||"").trim();
+    if(!msg){ if(msgEl) msgEl.focus(); showFbToast("Please enter a comment."); return; }
+    var subject="Food Gap feedback";
+    var body=[
+      "Name: "+(name||"(not provided)"),
+      "Reply-to: "+(email||"(not provided)"),
+      "",
+      "Message:",
+      msg,
+      "",
+      "---",
+      "Page: "+location.href,
+      "UA: "+String(navigator.userAgent||"").slice(0,180)
+    ].join("\n");
+    var draft="To: foodgap-feedback@agentmail.to\nSubject: "+subject+"\n\n"+body;
+    var href="mailto:foodgap-feedback@agentmail.to?subject="+encodeURIComponent(subject)+"&body="+encodeURIComponent(body);
+    function copyFallback(note){
+      var done=function(){ showFbToast(note||"Email blocked — draft copied to clipboard."); };
+      try{
+        if(navigator.clipboard&&navigator.clipboard.writeText){
+          navigator.clipboard.writeText(draft).then(done).catch(function(){
+            showFbToast("Could not open email. Write to foodgap-feedback@agentmail.to");
+          });
+        } else {
+          var ta=document.createElement("textarea"); ta.value=draft; document.body.appendChild(ta); ta.select();
+          try{ document.execCommand("copy"); done(); }catch(e){ showFbToast("Could not open email. Write to foodgap-feedback@agentmail.to"); }
+          document.body.removeChild(ta);
+        }
+      }catch(e){ showFbToast("Could not open email. Write to foodgap-feedback@agentmail.to"); }
+    }
+    if(href.length>1800){
+      closeFeedback();
+      copyFallback("Draft too long for mailto — copied to clipboard.");
+      return;
+    }
+    var opened=false;
+    try{
+      var a=document.createElement("a"); a.href=href; a.style.display="none";
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      opened=true;
+    }catch(e){ opened=false; }
+    closeFeedback();
+    if(opened) showFbToast("Opening your email app…");
+    else copyFallback();
+  }
+  var feedbackBtn=document.getElementById("feedback-btn");
+  if(feedbackBtn) feedbackBtn.onclick=openFeedback;
+  var fbCancel=document.getElementById("fb-cancel"); if(fbCancel) fbCancel.onclick=closeFeedback;
+  var fbSend=document.getElementById("fb-send"); if(fbSend) fbSend.onclick=sendFeedback;
   // lang toggle removed (US-only)
-  [modal,method,dataTableModal].forEach(function(m){ m.addEventListener("click",function(e){ if(e.target===m) m.classList.remove("open"); }); });
+  [modal,method,dataTableModal,feedbackModal].forEach(function(m){ if(!m) return; m.addEventListener("click",function(e){ if(e.target===m) m.classList.remove("open"); }); });
   document.addEventListener("keydown",function(e){
     var tag=(e.target&&e.target.tagName||"").toUpperCase();
     var typing=tag==="INPUT"||tag==="TEXTAREA"||tag==="SELECT"||(e.target&&e.target.isContentEditable);
     if(!typing && !e.altKey && !e.metaKey && !e.ctrlKey && /^[1-5]$/.test(e.key)){ e.preventDefault(); openStoryStop(+e.key); return; }
     if(e.key==="Escape"){
+      if(feedbackModal&&feedbackModal.classList.contains("open")){ closeFeedback(); return; }
       closePanel(); modal.classList.remove("open"); method.classList.remove("open"); closeDataTable(); setFiltersOpen(false);
       closeSearchResults();
     }
