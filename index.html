@@ -298,11 +298,22 @@
     .panel{overscroll-behavior:contain;visibility:hidden;transition:transform .32s cubic-bezier(.4,0,.2,1),visibility 0s .35s}
     .panel.open{visibility:visible;transition:transform .32s cubic-bezier(.4,0,.2,1)}
     .panel::before{content:"";display:block;position:sticky;top:6px;z-index:11;width:44px;height:4px;margin:0 auto 2px;border-radius:3px;background:rgba(255,255,255,.28)}
-    .panel{width:100%;top:auto;bottom:0;height:62%;border-left:0;border-top:1px solid var(--line);transform:translateY(100%);border-radius:18px 18px 0 0;z-index:12;
+    .panel{width:100%;top:auto;bottom:0;height:auto;max-height:50vh;max-height:50dvh;border-left:0;border-top:1px solid var(--line);transform:translateY(100%);border-radius:18px 18px 0 0;z-index:12;
       padding-bottom:env(safe-area-inset-bottom)}
     .panel.open{transform:translateY(0)}
     body.panel-open .legend,body.panel-open .filters{display:none}
     .modal{padding:24px 20px;max-height:86vh}
+    /* Splash: pin Enter CTA; body scrolls above it */
+    #modal .modal{display:flex;flex-direction:column;max-height:92vh;max-height:min(92dvh,92vh);overflow:hidden;padding:20px 18px 14px}
+    #modal .modal .splash-scroll{flex:1 1 auto;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+    #modal .modal .splash-footer{flex:0 0 auto;padding-top:12px;margin-top:4px;border-top:1px solid var(--line)}
+    #modal .modal .splash-footer .cta{margin-top:0}
+    #modal .modal .splash-footer .version{margin-top:8px}
+    #modal .modal h1{font-size:clamp(22px,5.8vw,28px);line-height:1.15;margin:0 0 10px}
+    #modal .modal p{font-size:13px;line-height:1.55;margin:8px 0}
+    #modal .modal .kstat{margin:12px 0;gap:14px}
+    #modal .modal .kstat .n{font-size:20px}
+    #modal .modal .src{margin-top:12px;padding-top:12px}
     .table-wrap{max-height:46vh}
     .cmp-pickers{grid-template-columns:1fr}
     th,td{padding:9px 10px}
@@ -411,6 +422,7 @@
 </div>
 <div class="modal-bg open" id="modal">
   <div class="modal">
+    <div class="splash-scroll">
     <div class="tag">THE FOOD GAP · UNITED STATES</div>
     <h1>Which American communities face the greatest risk of food insecurity?</h1>
     <p>When a household's income falls too low, reliable access to enough healthy food is often the first thing to go. Low income is the strongest predictor of household food insecurity in the United States.</p>
@@ -421,7 +433,6 @@
       <div><div class="n" id="m-people">—</div><div class="l">people with low food access</div></div>
       <div><div class="n" id="m-provs">—</div><div class="l">states + DC</div></div>
     </div>
-    <button class="cta" id="enter-btn">Enter the national map</button>
     <div class="src">
       Data: <a href="https://www.ers.usda.gov/data-products/food-access-research-atlas/" target="_blank" rel="noopener">USDA ERS Food Access Research Atlas (2019)</a>,
       CDC USALEEP, U.S. Census population estimates, USDA Food Environment Atlas (stores),
@@ -431,7 +442,11 @@
       Built from U.S. federal public-domain sources; not an official USDA, CDC, Census, or BLS product.
       Privacy: static site, no accounts, no forms, no cookies, no analytics. See <a href="PRIVACY.md" target="_blank" rel="noopener">Privacy note</a>.
     </div>
+    </div>
+    <div class="splash-footer">
+    <button class="cta" id="enter-btn">Enter the national map</button>
     <div class="version">Version <span id="app-version">—</span><span class="version-credit"> · Chris Householder</span></div>
+    </div>
   </div>
 </div>
 <div class="modal-bg" id="method">
@@ -570,15 +585,17 @@ window.addEventListener("DOMContentLoaded",function(){
   }
 
   function aboutHtml(){
-    return '<div class="tag">THE FOOD GAP · UNITED STATES</div>'+
+    return '<div class="splash-scroll">'+
+      '<div class="tag">THE FOOD GAP · UNITED STATES</div>'+
       '<h1 id="about-title">Which American communities face the greatest risk of food insecurity?</h1>'+
       '<p>When a household\'s income falls too low, reliable access to enough healthy food is often the first thing to go. Low income is the strongest predictor of household food insecurity in the United States.</p>'+
       '<p>This map shows <b>2,083 U.S. counties that contain food-desert tracts</b> — not every U.S. county — shaded by a <b>custom severity index</b> from USDA Food Access Research Atlas (2019) tract data.</p>'+
       '<p>Click a state for statewide stats, then dig into counties for desert tracts, people with low food access, stores, and modelled grocery context. Severity is <b>not</b> a published USDA county LILA percentage.</p>'+
       '<div class="kstat"><div><div class="n" id="m-areas">—</div><div class="l">counties with deserts</div></div><div><div class="n" id="m-people">—</div><div class="l">people with low food access</div></div><div><div class="n" id="m-provs">—</div><div class="l">states + DC</div></div></div>'+
-      '<button class="cta" id="enter-btn">Enter the national map</button>'+
       '<div class="src">Data: <a href="https://www.ers.usda.gov/data-products/food-access-research-atlas/" target="_blank" rel="noopener">USDA ERS Food Access Research Atlas (2019)</a>, CDC USALEEP, U.S. Census, USDA Food Environment Atlas, and <a href="https://www.bls.gov/cex/" target="_blank" rel="noopener">BLS Consumer Expenditure Survey</a> (national food-at-home baseline used to model weekly grocery estimates). Basemap © OpenFreeMap · OpenStreetMap contributors. Built from U.S. federal public-domain sources; not an official USDA, CDC, Census, or BLS product. Privacy: static site, no accounts, no forms, no cookies, no analytics. See <a href="PRIVACY.md" target="_blank" rel="noopener">Privacy note</a>.</div>'+
-      '<div class="version">Version <span id="app-version">—</span><span class="version-credit"> · Chris Householder</span></div>';
+      '</div><div class="splash-footer">'+
+      '<button class="cta" id="enter-btn">Enter the national map</button>'+
+      '<div class="version">Version <span id="app-version">—</span><span class="version-credit"> · Chris Householder</span></div></div>';
   }
 
   function methodHtml(){
@@ -829,6 +846,29 @@ window.addEventListener("DOMContentLoaded",function(){
     if(q.top+q.bottom>h*0.9){s=(h*0.9)/(q.top+q.bottom);q.top=Math.floor(q.top*s);q.bottom=Math.floor(q.bottom*s);}
     return q;}catch(e){return {top:20,bottom:20,left:20,right:20};} }
   function fitSafe(b,o){ try{o=o||{};o.padding=safePad(o.padding||{});map.fitBounds(b,o);}catch(e){} }
+  function mobilePanelPad(){
+    var top=84, bottom=Math.round(window.innerHeight*0.52)+24, left=24, right=24;
+    try{
+      var mr=map.getContainer().getBoundingClientRect();
+      var ph=panel.offsetHeight || Math.round(window.innerHeight*0.5);
+      /* use layout height (not transformed rect) so padding is correct mid-slide */
+      var panelTopOpen=window.innerHeight - ph;
+      bottom=Math.max(48, Math.round(mr.bottom - panelTopOpen)+24);
+      var hdr=document.querySelector("header");
+      if(hdr){ var hr=hdr.getBoundingClientRect(); top=Math.max(64, Math.round(hr.bottom-mr.top)+12); }
+    }catch(e){}
+    return {top:top,bottom:bottom,left:left,right:right};
+  }
+  function fitWithPanel(bb,o){
+    o=o||{};
+    if(!MOB()){ fitSafe(bb,Object.assign({padding:{top:70,bottom:70,left:60,right:430}},o)); return; }
+    fitSafe(bb,Object.assign({},o,{padding:mobilePanelPad()}));
+    requestAnimationFrame(function(){
+      setTimeout(function(){
+        fitSafe(bb,Object.assign({},o,{padding:mobilePanelPad(),duration:0}));
+      },40);
+    });
+  }
   function fit(){ fitSafe(HOME,{padding:MOB()?{top:130,bottom:24,left:12,right:12}:{top:120,bottom:44,left:44,right:300},duration:0}); }
   function hasDivisionSource(){ return map.getSource && !!map.getSource("divisions"); }
   var basemapFailed=false;
@@ -1142,7 +1182,7 @@ window.addEventListener("DOMContentLoaded",function(){
     setStatus("State: "+S.name);
     try{ history.replaceState(null,"",langUrl(null,S.name)); }catch(e){}
     var bb=S.bbox;
-    fitSafe([[bb[0],bb[1]],[bb[2],bb[3]]],{padding:MOB()?{top:84,bottom:Math.max(90,Math.round(window.innerHeight*0.55)-110),left:24,right:24}:{top:70,bottom:70,left:60,right:430},maxZoom:6.5,duration:dur(800)});
+    fitWithPanel([[bb[0],bb[1]],[bb[2],bb[3]]],{maxZoom:6.5,duration:dur(800)});
     var heading=document.getElementById("panel-title"); if(heading) heading.focus({preventScroll:true});
   }
   function selectDivision(p,geom,moveFocus){
@@ -1202,7 +1242,7 @@ window.addEventListener("DOMContentLoaded",function(){
     if(moveFocus){var heading=document.getElementById("panel-title"); if(heading) heading.focus({preventScroll:true});}
     try{ history.replaceState(null,"",langUrl(p.code)); }catch(e){}
     clearSelected(); selectedDivision=p.code; if(hasDivisionSource()) map.setFeatureState({source:"divisions",id:p.code},{selected:true});
-    if(geom){var bb=bboxOf(geom); fitSafe([[bb[0],bb[1]],[bb[2],bb[3]]],{padding:MOB()?{top:84,bottom:Math.max(90,Math.round(window.innerHeight*0.62)-110),left:24,right:24}:{top:70,bottom:70,left:60,right:430},maxZoom:7,duration:dur(800)});}
+    if(geom){var bb=bboxOf(geom); fitWithPanel([[bb[0],bb[1]],[bb[2],bb[3]]],{maxZoom:7,duration:dur(800)});}
   }
   function openByCode(code){
     for(var i=0;i<US.features.length;i++){ if(US.features[i].properties.code===code){ selectDivision(US.features[i].properties,US.features[i].geometry); return; } }
@@ -1231,7 +1271,8 @@ window.addEventListener("DOMContentLoaded",function(){
       var sy=null;
       m.addEventListener("touchstart",function(e){ if(!MOB())return; sy=e.touches[0].clientY; },{passive:true});
       m.addEventListener("touchend",function(e){ if(!MOB()||sy===null)return; var dy=e.changedTouches[0].clientY-sy; sy=null;
-        var atTop=m.scrollTop<=2, atBottom=m.scrollTop+m.clientHeight>=m.scrollHeight-2;
+        var sc=m.querySelector(".splash-scroll")||m;
+        var atTop=sc.scrollTop<=2, atBottom=sc.scrollTop+sc.clientHeight>=sc.scrollHeight-2;
         if((dy>90&&atTop)||(dy<-90&&atBottom)) close(); },{passive:true});
       m.addEventListener("touchcancel",function(){ sy=null; },{passive:true});
   }); })();
